@@ -1,0 +1,12 @@
+If remoting into computer, address is: 1311-1019rfml05
+
+In terminal, navigate to vanguard/usrp-siggen
+
+./programs double-tab lets you see signal options
+
+Example run signal: ./programs/usrp_linmod -f 2.45e9 -a serial=30C62B1
+(run usrp_linmod signal, center frequency = 2.45 GHz, from radio 30C62B1)
+-h lets you see customizable characteristics
+-NOTE: If modifying gain, stay within 10-80 dB
+
+To cut process: ctrl + c
