@@ -36,14 +36,23 @@ def generate_sinc(sampling_frequency, time_duration, cutoff_frequency):
 def calculate_fft(sampled_wave, sampling_frequency, fft_size):
 
     dft = np.fft.fft(sampled_wave, fft_size)
-    dft = np.fft.fftshift(dft)
-    fft_values = abs(dft) / fft_size
+    dft_real_im = np.fft.fftshift(dft)
+    fft_values = abs(dft_real_im) / fft_size
 
     frequency_resolution = sampling_frequency / fft_size
     frequencies_to_plot = np.arange(-(fft_size * frequency_resolution) // 2, (fft_size * frequency_resolution) // 2, \
         frequency_resolution)
+    
+    return (fft_values, frequencies_to_plot, dft_real_im)
 
-    return (fft_values, frequencies_to_plot)
+
+def mulitply_ffts(dft_real_im_wave, dft_real_im_sinc, time_range):
+
+    fft_both = np.multiply(dft_real_im_wave,dft_real_im_sinc)
+    abs_fft_both = abs(fft_both)
+    filtered_wave = abs(np.fft.ifft((np.fft.ifftshift(fft_both)), n=len(time_range)))
+
+    return (abs_fft_both, filtered_wave)
 
 
 #Inputs
@@ -54,10 +63,11 @@ cutoff_frequency = 2000 #Hz
 snr_dB = 20 #dB
 fft_size = 200000
 
+
 (time_range, sampled_wave) = generate_wave(sampling_frequency, time_duration, center_frequency, snr_dB)
 (time_range, sampled_sinc) = generate_sinc(sampling_frequency, time_duration, cutoff_frequency)
-(sine_wave_fft, frequencies_to_plot_1) = calculate_fft(sampled_wave, sampling_frequency, fft_size)
-(sinc_fft, frequencies_to_plot_2) = calculate_fft(sampled_sinc, sampling_frequency, fft_size)
+(sine_wave_fft, frequencies_to_plot_1, dft_real_im_wave) = calculate_fft(sampled_wave, sampling_frequency, fft_size)
+(sinc_fft, frequencies_to_plot_2, dft_real_im_sinc) = calculate_fft(sampled_sinc, sampling_frequency, fft_size)
 
 plt.figure(0)
 plt.plot(time_range, sampled_wave)
@@ -88,3 +98,22 @@ plt.xlabel("Frequency (Hz)")
 plt.title("FFT sinc")
 plt.xlim(-3*cutoff_frequency,3*cutoff_frequency)
 plt.savefig("fft_sinc.png")
+
+
+(fft_both, filtered_wave) = mulitply_ffts(dft_real_im_wave, dft_real_im_sinc, time_range)
+
+plt.figure(4)
+plt.plot(frequencies_to_plot_2, fft_both)
+plt.xlabel("Frequency (Hz)")
+plt.title("FFT multiplied")
+plt.xlim(-3*cutoff_frequency,3*cutoff_frequency)
+plt.savefig("fft_multiplied.png")
+
+plt.figure(5)
+plt.plot(time_range, filtered_wave)
+plt.xlabel("Time (s)")
+plt.ylabel('Amplitude (V)')
+plt.title("Filtered wave")
+plt.xlim(-time_duration/4, time_duration/4)
+plt.ylim(-2,2)
+plt.savefig("filtered_wave.png")
