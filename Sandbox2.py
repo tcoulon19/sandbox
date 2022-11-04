@@ -92,12 +92,13 @@ print(new_exercise.get_duration())
 # with open("example_json.json", "w") as file:
 #     file.write(z)
 
-from multiprocessing import Process
+# from multiprocessing import Process
 
-def f(name):
-    print('hello', name)
+# def f(name):
+#     print('hello', name)
 
-if __name__ == '__main__':
-    p = Process(target = f, args = ('bob',))
-    p.start()
-    p.join()
+# if __name__ == '__main__':
+#     p = Process(target = f, args = ('bob',))
+#     p.start()
+#     p.join()
+
