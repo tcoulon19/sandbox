@@ -48,9 +48,9 @@ def calculate_fft(sampled_wave, sampling_frequency, fft_size):
 
 def mulitply_ffts(dft_real_im_wave, dft_real_im_sinc, time_range):
 
-    fft_both = np.multiply(dft_real_im_wave,dft_real_im_sinc)
+    fft_both = dft_real_im_wave*dft_real_im_sinc
     abs_fft_both = abs(fft_both)
-    filtered_wave = abs(np.fft.ifft((np.fft.ifftshift(fft_both)), n=len(time_range)))
+    filtered_wave = np.fft.ifft((np.fft.ifftshift(fft_both)), n=len(time_range))
 
     return (abs_fft_both, filtered_wave)
 
@@ -114,6 +114,6 @@ plt.plot(time_range, filtered_wave)
 plt.xlabel("Time (s)")
 plt.ylabel('Amplitude (V)')
 plt.title("Filtered wave")
-plt.xlim(-time_duration/4, time_duration/4)
-plt.ylim(-2,2)
+plt.xlim(-.005, -.003)
+# plt.ylim(-2,2)
 plt.savefig("filtered_wave.png")
