@@ -46,29 +46,30 @@ def calculate_fft(sampled_wave, sampling_frequency, fft_size):
     return (fft_values, frequencies_to_plot, dft_real_im)
 
 
-def mulitply_ffts(dft_real_im_wave, dft_real_im_sinc, time_range):
+def multiply_ffts(dft_real_im_wave, dft_real_im_sinc, fft_size, fs):
 
     fft_both = dft_real_im_wave*dft_real_im_sinc
     abs_fft_both = abs(fft_both)
-    filtered_wave = np.fft.ifft((np.fft.ifftshift(fft_both)), n=len(time_range))
+    filtered_wave = fft_size*np.fft.ifft((np.fft.ifftshift(fft_both)), n=fft_size)
+    time_range_recomp = np.arange(-len(filtered_wave)/2, len(filtered_wave)/2)/fs
 
-    return (abs_fft_both, filtered_wave)
+    return (abs_fft_both, filtered_wave, time_range_recomp)
 
 
 #Inputs
-sampling_frequency = 2000000 #Hz
+sampling_frequency = 200000 #Hz
 time_duration = .01 #s
 center_frequency = 1000 #Hz
 cutoff_frequency = 2000 #Hz
 snr_dB = 20 #dB
-fft_size = 200000
+fft_size = 2000
 
 
 (time_range, sampled_wave) = generate_wave(sampling_frequency, time_duration, center_frequency, snr_dB)
 (time_range, sampled_sinc) = generate_sinc(sampling_frequency, time_duration, cutoff_frequency)
 (sine_wave_fft, frequencies_to_plot_1, dft_real_im_wave) = calculate_fft(sampled_wave, sampling_frequency, fft_size)
 (sinc_fft, frequencies_to_plot_2, dft_real_im_sinc) = calculate_fft(sampled_sinc, sampling_frequency, fft_size)
-(fft_both, filtered_wave) = mulitply_ffts(dft_real_im_wave, dft_real_im_sinc, time_range)
+(fft_both, filtered_wave, time_range_recomp) = multiply_ffts(dft_real_im_wave, dft_real_im_sinc, fft_size, sampling_frequency)
 
 
 plt.figure(0)
@@ -76,7 +77,6 @@ plt.plot(time_range, sampled_wave)
 plt.xlabel("Time (s)")
 plt.ylabel("Voltage (V)")
 plt.title("Sine wave with noise")
-plt.xlim(-time_duration/4, time_duration/4)
 plt.savefig("filter_example_images/sine_wave_with_noise.png")
 
 plt.figure(1)
@@ -84,7 +84,6 @@ plt.plot(time_range, sampled_sinc)
 plt.xlabel("Time (s)")
 plt.ylabel("Voltage (V)")
 plt.title("Sinc time domain")
-plt.xlim(-time_duration/4, time_duration/4)
 plt.savefig("filter_example_images/sinc_time_domain.png")
 
 plt.figure(2)
@@ -109,9 +108,8 @@ plt.xlim(-3*cutoff_frequency,3*cutoff_frequency)
 plt.savefig("filter_example_images/fft_multiplied.png")
 
 plt.figure(5)
-plt.plot(time_range, filtered_wave)
+plt.plot(time_range_recomp, filtered_wave)
 plt.xlabel("Time (s)")
 plt.ylabel('Amplitude (V)')
 plt.title("Filtered wave")
-plt.xlim(-.005, -.003)
 plt.savefig("filter_example_images/filtered_wave.png")
