@@ -37,7 +37,7 @@ def calculate_fft(sampled_wave, sampling_frequency, fft_size):
 
     dft = np.fft.fft(sampled_wave, fft_size)
     dft_real_im = np.fft.fftshift(dft)
-    fft_values = abs(dft_real_im) / fft_size
+    fft_values = abs(dft_real_im) 
 
     frequency_resolution = sampling_frequency / fft_size
     frequencies_to_plot = np.arange(-(fft_size * frequency_resolution) // 2, (fft_size * frequency_resolution) // 2, \
@@ -62,7 +62,7 @@ time_duration = 2 #s
 center_frequency = 10 #Hz
 cutoff_frequency = 15 #Hz
 snr_dB = 20 #dB
-fft_size = 640
+fft_size = 640 # Might be good to use sampling_frequency*time_duration
 
 
 (time_range_wave, sampled_wave) = generate_wave(sampling_frequency, time_duration, center_frequency, snr_dB)
